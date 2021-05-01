@@ -26,6 +26,7 @@
    Heavily hand-edited by KH and MM.
  */
 
+
 /* <UTF8> chars are handled as whole strings */
 
 #define bool unsigned int

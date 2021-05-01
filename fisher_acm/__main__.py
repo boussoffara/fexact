@@ -1,14 +1,14 @@
 # type: ignore[attr-defined]
 
-import random
-from enum import Enum
 from typing import Optional
 
-import typer
-from rich.console import Console
+import random
+from enum import Enum
 
+import typer
 from fisher_acm import __version__
 from fisher_acm.example import hello
+from rich.console import Console
 
 
 class Color(str, Enum):
@@ -42,13 +42,16 @@ def main(
     name: str = typer.Option(..., help="Name of person to greet."),
     color: Optional[Color] = typer.Option(
         None,
-        "-c", "--color", "--colour",
+        "-c",
+        "--color",
+        "--colour",
         case_sensitive=False,
         help="Color for name. If not specified then choice will be random.",
     ),
     version: bool = typer.Option(
         None,
-        "-v", "--version",
+        "-v",
+        "--version",
         callback=version_callback,
         is_eager=True,
         help="Prints the version of the fisher-acm package.",
