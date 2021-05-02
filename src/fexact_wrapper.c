@@ -37,7 +37,7 @@ trace(PyObject *self, PyObject *args, PyObject *kwargs){
     emin= 1;
   }
 
-  if (array->nd != 2 || array->descr->type_num != PyArray_LONGLONG) {
+  if (array->nd != 2 || array->descr->type_num != NPY_INT64) {
     PyErr_SetString(PyExc_ValueError,
     "array must be two-dimensional and cast of type np.int64, (np.array(x,dtype=np.int64)");
     return NULL;
