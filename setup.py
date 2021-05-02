@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-import os
 from distutils.core import setup, Extension
 import numpy
 
@@ -11,11 +9,11 @@ setup(name             = "fexact",
       author           = "A. Boussoffara",
       author_email     = "boussoffara@me.com",
       maintainer       = "boussoffara@me.com",
-      url              = "https://www.github.com/boussoffara/fisher-acm",
+      url              = "https://github.com/boussoffara/fexact",
       ext_modules      = [
           Extension(
-              'fexact', ['fisher_acm/fexact_wrapper.c','fisher_acm/fexact.c','fisher_acm/helpers.c',
-                         ],include_dirs=[numpy.get_include(),'fisher_acm/helpers.h','fisher_acm/fexact.h'],
+              'fexact', ['src/fexact_wrapper.c','src/fexact.c','src/helpers.c',
+                         ],include_dirs=[numpy.get_include(),'src/helpers.h','src/fexact.h'],
               extra_compile_args=[]),
 
       ],
