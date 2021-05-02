@@ -12,10 +12,10 @@ with open(os.path.join(current_folder, 'README.md'), encoding='utf-8') as f:
 
 
 setup(name             = "fexact",
-      version          = "0.0.3",
+      version          = "0.0.2",
       description      = "Exact Fisher test for nxm contingency matrix based on fortran acm 643 and R",
-      long_description=long_description,
       long_description_content_type='text/markdown',
+      long_description=long_description,
       license='GPLv3',
       author           = "A. Boussoffara",
       author_email     = "boussoffara@me.com",

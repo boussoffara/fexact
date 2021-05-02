@@ -357,7 +357,7 @@ This project is licensed under the terms of the `GNU GPL v3.0` license. See [LIC
 
 ```
 @misc{fisher-acm,
-  author = {ems},
+  author = {boussoffara},
   title = {Awesome `fisher-acm` is a Python cli/package created with https://github.com/TezRomacH/python-package-template},
   year = {2021},
   publisher = {GitHub},
