@@ -14,6 +14,25 @@ on:
 #       - published
 
 jobs:
+
+
+  test_build:
+    name: Test package on ${{ matrix.os }} {{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.8]
+        os: [ubuntu-20.04, windows-2019, macos-10.15]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install tox
+      run: pip3 install tox
+    - name: Run tox
+      run: tox -p all
+
+
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -64,7 +83,7 @@ jobs:
           path: dist/*.tar.gz
 
   upload_pypi:
-    needs: [build_wheels, build_sdist]
+    needs: [test_build,build_wheels, build_sdist]
     runs-on: ubuntu-latest
     # upload to PyPI on every tag starting with 'v'
 #    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
