@@ -34,7 +34,6 @@ trace(PyObject *self, PyObject *args){
 
     int * table=malloc(nrow*ncol*sizeof(int));
 
-    k=0;
     for (j = 0; j < ncol; j++){
       for (i = 0; i < nrow; i++){
       table[i + j * ldtabl]=*(int *)(array->data + i*array->strides[0] + j*array->strides[1]);
