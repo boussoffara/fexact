@@ -1,5 +1,5 @@
-include fisher_acm/helpers.h
-include fisher_acm/fexact.h
+include src/helpers.h
+include src/fexact.h
 
 # Include the README
 include *.md
