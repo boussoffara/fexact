@@ -26,7 +26,7 @@ jobs:
         os: [ubuntu-20.04, windows-2019, macos-10.15]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2.3.4
     - name: Install tox
       run: pip3 install tox
     - name: Run tox
@@ -44,7 +44,7 @@ jobs:
         os: [ubuntu-20.04, windows-2019, macos-10.15]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
 
       - uses: actions/setup-python@v2
         name: Install Python
@@ -65,7 +65,7 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
 
       - uses: actions/setup-python@v2
         name: Install Python
