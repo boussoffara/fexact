@@ -1,2 +1,8 @@
 include fisher_acm/helpers.h
 include fisher_acm/fexact.h
+
+# Include the README
+include *.md
+
+# Include the license file
+include LICENSE.txt
