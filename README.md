@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![Build status](https://github.com/boussoffara/fexact/workflows/build/badge.svg?branch=master&event=push)](https://github.com/boussoffara/fexact/actions?query=workflow%3Abuild)
+[![Build status](https://github.com/boussoffara/fexact/workflows/Run%20Tests/badge.svg?branch=master&event=push)](https://github.com/boussoffara/fexact/actions?query=workflow%3Abuild)
 [![Python Version](https://img.shields.io/pypi/pyversions/fexact.svg)](https://pypi.org/project/fexact/)
 [![Dependencies Status](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)](https://github.com/boussoffara/fexact/pulls?utf8=%E2%9C%93&q=is%3Apr%20author%3Aapp%2Fdependabot)
 
