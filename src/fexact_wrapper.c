@@ -14,46 +14,54 @@
 
 
 static PyObject *
-trace(PyObject *self, PyObject *args){
+trace(PyObject *self, PyObject *args, PyObject *kwargs){
   PyArrayObject *array;
-//  double sum;
+  int workspace=200000;
   int i,j;
-  if (!PyArg_ParseTuple(args, "O!",&PyArray_Type, &array)){
-    PyErr_SetString(PyExc_ValueError,"Error while parsing the trajectory coordinates in get_spinangle_traj");
-    return NULL;
-  }
-  if (array->nd != 2 || array->descr->type_num != PyArray_INT) {
-    PyErr_SetString(PyExc_ValueError,
-    "array must be two-dimensional and of type integer");
-    return NULL;
-  }
+  int mult=30;
+  int hybrid=0;
+  double expect=-1;
+  double percnt=100;
+  double emin=0;
+  double prt;
+  double pre;
 
-    int nrow =array->dimensions[0];
-    int ldtabl=array->dimensions[0];
-    int ncol=array->dimensions[1];
-
-    int * table=malloc(nrow*ncol*sizeof(int));
-
-    for (j = 0; j < ncol; j++){
-      for (i = 0; i < nrow; i++){
-      table[i + j * ldtabl]=*(int *)(array->data + i*array->strides[0] + j*array->strides[1]);
-      }
+  static char *kwlist[] = {"array", "workspace","hybrid", NULL};
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|ip", kwlist,&PyArray_Type, &array,&workspace,&hybrid))
+    {
+        return NULL;
     }
+  if (hybrid){
+    expect=5;
+    percnt=80;
+    emin= 1;
+  }
+
+  if (array->nd != 2 || array->descr->type_num != PyArray_LONGLONG) {
+    PyErr_SetString(PyExc_ValueError,
+    "array must be two-dimensional and cast of type np.int64, (np.array(x,dtype=np.int64)");
+    return NULL;
+  }
+
+  // copy table and prepare corresponding vars for fexact
+  int nrow =array->dimensions[0];
+  int ldtabl=array->dimensions[0];
+  int ncol=array->dimensions[1];
+  int * table=malloc(nrow*ncol*sizeof(int));
+  for (j = 0; j < ncol; j++){
+    for (i = 0; i < nrow; i++){
+    table[i + j * ldtabl]=*(int *)(array->data + i*array->strides[0] + j*array->strides[1]);
+    }
+  }
 
 
-    double expect=-1;
-    double percnt=100;
-    double emin=0;
-    double prt;
-    double pre;
-    int workspace=200000;
-    int mult=30;
-    fexact(&nrow, &ncol, table, &ldtabl,
-    &expect, &percnt, &emin, &prt,
-    &pre, &workspace,
-    &mult);
+  // call fexact
+  fexact(&nrow, &ncol, table, &ldtabl,
+  &expect, &percnt, &emin, &prt,
+  &pre, &workspace,
+  &mult);
 
-    return PyFloat_FromDouble(pre);
+  return PyFloat_FromDouble(pre);
 }
 
 
@@ -62,7 +70,7 @@ trace(PyObject *self, PyObject *args){
 
 
 static PyMethodDef fexact_methods[] = {
-	{"fexact", trace,	METH_VARARGS,
+	{"fexact", trace,	METH_VARARGS | METH_KEYWORDS,
 	  "Doc string."},
 	{NULL,		NULL}		/* sentinel */
 };
