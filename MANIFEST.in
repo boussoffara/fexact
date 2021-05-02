@@ -1,0 +1,8 @@
+include src/helpers.h
+include src/fexact.h
+
+# Include the README
+include *.md
+
+# Include the license file
+include LICENSE.txt
