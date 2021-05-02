@@ -2,7 +2,7 @@ name: Run Tests
 on: [push, pull_request]
 jobs:
   build:
-    name: Build wheels on ${{ matrix.os }}
+    name: Test build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 4

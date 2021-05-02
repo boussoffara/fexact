@@ -1,21 +1,25 @@
-name: Test PyPI Dev
+name: Publish release
 
 # Build on every branch push, tag push, and pull request change:
+#on:
+#  push:
+#    branches:
+#      - master
+# Alternatively, to publish when a (published) GitHub Release is created, use the following:
 on:
   push:
     branches:
       - master
-# Alternatively, to publish when a (published) GitHub Release is created, use the following:
-# on:
-#   push:
-#   pull_request:
-#   release:
-#     types:
-#       - published
+ pull_request:
+   branches:
+     - master
+ release:
+   types:
+     - published
 
 jobs:
   test_build:
-    name: Test package on ${{ matrix.os }} {{ matrix.python-version }}
+    name: Test package on ${{ matrix.os }} ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 4
