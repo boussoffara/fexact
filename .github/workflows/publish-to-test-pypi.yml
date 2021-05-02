@@ -1,4 +1,4 @@
-name: Build and upload to PyPI
+name: Test PyPI Dev
 
 # Build on every branch push, tag push, and pull request change:
 on:
