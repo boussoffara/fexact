@@ -12,7 +12,7 @@ setup(name             = "fexact",
       ext_modules      = [
           Extension(
               'fexact', ['fisher_acm/fexact_wrapper.c','fisher_acm/fexact.c','fisher_acm/helpers.c',
-                         'fisher_acm/helpers.h','fisher_acm/fexact.h'],include_dirs=[numpy.get_include()],
+                         ],include_dirs=[numpy.get_include(),'fisher_acm/helpers.h','fisher_acm/fexact.h'],
               extra_compile_args=[]),
 
       ],
