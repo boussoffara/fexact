@@ -37,6 +37,7 @@
 #include <limits.h>
 #include <math.h>
 #include <stdlib.h>
+#include <Python.h>
 #include "helpers.h"
 
 static void f2xact(int nrow, int ncol, int *table, int ldtabl,
@@ -1792,8 +1793,7 @@ void  prterr(int icode, const char *mes)
      mes    - Character string containing the error message.	(Input)
   -----------------------------------------------------------------------
   */
-    printf( mes);
-    printf( "FEXACT error %d.\n%s");
+    PyErr_SetString(PyExc_ValueError,mes);
 }
 
 int iwork(int iwkmax, int *iwkpt, int number, int itype)
