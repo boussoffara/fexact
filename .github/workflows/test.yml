@@ -13,6 +13,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install tox
-      run: pip install tox
+      run: pip3 install tox
     - name: Run tox
       run: tox
