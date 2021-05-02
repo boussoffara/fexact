@@ -7,13 +7,7 @@ name: Publish release
 #      - master
 # Alternatively, to publish when a (published) GitHub Release is created, use the following:
 on:
-  push:
-    branches:
-      - master
- pull_request:
-   branches:
-     - master
- release:
+  release:
    types:
      - published
 
