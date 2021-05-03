@@ -28,3 +28,13 @@ def test_fexact_hybrid():
 
     res=fexact(k,workspace=10000000,hybrid=False)
     assert np.abs(0.4158 -res)<10e-3
+
+
+import gc
+def test_memleak():
+    for i in range(1):
+        k=np.array([[10,6,7]*10,[5,7,9]*10], dtype=np.int64)
+        res=fexact(k,workspace=10000000,hybrid=False)
+        print(res)
+        gc.collect()
+

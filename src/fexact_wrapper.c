@@ -60,6 +60,7 @@ trace(PyObject *self, PyObject *args, PyObject *kwargs){
   &expect, &percnt, &emin, &prt,
   &pre, &workspace,
   &mult);
+  free(table);
 
   return PyFloat_FromDouble(pre);
 }
