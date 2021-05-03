@@ -1,13 +1,14 @@
 name: Bump version
 on:
-  push:
+  pull_request:
     branches:
       - master
+    types: [ closed ]
 
 jobs:
   bump-version:
     runs-on: ubuntu-latest
-    if: "!startsWith(github.event.head_commit.message, '[SKIP]')"
+    if: "github.event.pull_request.merged == true && !startsWith(github.event.head_commit.message, '[SKIP]')"
 
     steps:
 
