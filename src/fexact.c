@@ -309,7 +309,7 @@ fexact(int *nrow, int *ncol, int *table, int *ldtabl,
            iwrk + i10,
            iwrk + iiwk,
            dwrk + irwk);
-
+    free(equiv);
     return;
 }
 
