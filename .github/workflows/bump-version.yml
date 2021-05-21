@@ -2,7 +2,7 @@ name: Bump version
 on:
   pull_request:
     branches:
-      - master
+      - test_workflow
     types: [ closed ]
 
 jobs:
