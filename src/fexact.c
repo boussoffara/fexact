@@ -200,20 +200,28 @@ fexact(int *nrow, int *ncol, int *table, int *ldtabl,
     /* Function Body */
     iwkpt = 0;
 
-    if (*nrow > *ldtabl)
+    if (*nrow > *ldtabl){
         prterr(1, "NROW must be less than or equal to LDTABL.");
+        free(equiv);
+        return;
+    }
 
     ntot = 0;
     for (i = 0; i < *nrow; ++i) {
         for (j = 0; j < *ncol; ++j) {
-            if (table[i + j * *ldtabl] < 0)
-                prterr(2, "All elements of TABLE may not be negative.");
+            if (table[i + j * *ldtabl] < 0){
+              prterr(2, "All elements of TABLE may not be negative.");
+              free(equiv);
+              return;
+            }
+
             ntot += table[i + j * *ldtabl];
         }
     }
     if (ntot == 0) {
         prterr(3, "All elements of TABLE are zero.\n"
                   "PRT and PRE are set to missing values.");
+        free(equiv);
         *pre = *prt = amiss;
         return;
     }
@@ -386,10 +394,14 @@ f2xact(int nrow, int ncol, int *table, int ldtabl,
 
 
     /* Check table dimensions */
-    if (nrow > ldtabl)
+    if (nrow > ldtabl){
         prterr(1, "NROW must be less than or equal to LDTABL.");
-    if (ncol <= 1)
+        return ;
+    }
+    if (ncol <= 1){
         prterr(4, "NCOL must be at least 2");
+        return ;
+    }
 
     /* Initialize KEY array */
     for (i = 1; i <= *ldkey << 1; ++i) {
@@ -408,8 +420,10 @@ f2xact(int nrow, int ncol, int *table, int ldtabl,
     for (i = 1; i <= nrow; ++i) {
         iro[i] = 0;
         for (j = 1; j <= ncol; ++j) {
-            if (table[i + j * ldtabl] < 0.)
-                prterr(2, "All elements of TABLE may not be negative.");
+            if (table[i + j * ldtabl] < 0.){
+              prterr(2, "All elements of TABLE may not be negative.");
+              return;
+            }
             iro[i] += table[i + j * ldtabl];
         }
         ntot += iro[i];
@@ -653,6 +667,7 @@ f2xact(int nrow, int ncol, int *table, int ldtabl,
            */
         prterr(6, "LDKEY is too small for this problem.\n"
                   "Try increasing the size of the workspace.");
+        return ;
     }
 
     L240:
@@ -1023,8 +1038,12 @@ f3xact(int nrow, int *irow, int ncol, int *icol,
         for (i = 3; i <= nco; ++i) {
             key = it[i] + key * kyy;
         }
-        if (key < -1)
+        if (key < -1){
+            nst = 0;
+            nitc = 0;
             printf( "Bug in FEXACT: gave negative key");/* RECOVER(NULL_ENTRY);*/
+            return ;
+        }
         /* Table index */
         ipn = key % ldst + 1;
         /* Find empty position */
@@ -1047,6 +1066,8 @@ f3xact(int nrow, int *irow, int ncol, int *icol,
         /* this happens less, now that we check for negative key above: */
         prterr(30, "Stack length exceeded in f3xact.\n"
                    "This problem should not occur.");
+        return;
+         /*TODO check */
 
         L180: /* Push onto stack */
         ist[ii] = key;
@@ -1390,6 +1411,7 @@ f5xact(double *pastp, const double *tol, int *kval, int *key, int *ldkey,
           */
         prterr(6, "LDKEY is too small for this problem.\n"
                   "Try increasing the size of the workspace.");
+        return ;
 
 
         L30: /* Update KEY */
@@ -1407,6 +1429,7 @@ f5xact(double *pastp, const double *tol, int *kval, int *key, int *ldkey,
                */
             prterr(7, "LDSTP is too small for this problem.\n"
                       "Try increasing the size of the workspace.");
+            return;
         }
         /* Update STP, etc. */
         npoin[*itop] = -1;
@@ -1793,7 +1816,10 @@ void  prterr(int icode, const char *mes)
      mes    - Character string containing the error message.	(Input)
   -----------------------------------------------------------------------
   */
+    PyGILState_STATE gstate = PyGILState_Ensure();
     PyErr_SetString(PyExc_ValueError,mes);
+    PyGILState_Release(gstate);
+    return (PyObject *) NULL;
 }
 
 int iwork(int iwkmax, int *iwkpt, int number, int itype)
