@@ -1042,7 +1042,7 @@ f3xact(int nrow, int *irow, int ncol, int *icol,
             nst = 0;
             nitc = 0;
             printf( "Bug in FEXACT: gave negative key");/* RECOVER(NULL_ENTRY);*/
-            return ;
+            return - val; ;
         }
         /* Table index */
         ipn = key % ldst + 1;
@@ -1066,7 +1066,6 @@ f3xact(int nrow, int *irow, int ncol, int *icol,
         /* this happens less, now that we check for negative key above: */
         prterr(30, "Stack length exceeded in f3xact.\n"
                    "This problem should not occur.");
-        return;
          /*TODO check */
 
         L180: /* Push onto stack */
@@ -1819,7 +1818,6 @@ void  prterr(int icode, const char *mes)
     PyGILState_STATE gstate = PyGILState_Ensure();
     PyErr_SetString(PyExc_ValueError,mes);
     PyGILState_Release(gstate);
-    return (PyObject *) NULL;
 }
 
 int iwork(int iwkmax, int *iwkpt, int number, int itype)
