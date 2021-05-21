@@ -61,6 +61,9 @@ trace(PyObject *self, PyObject *args, PyObject *kwargs){
   &pre, &workspace,
   &mult);
   free(table);
+  if (PyErr_Occurred()){
+    return NULL;
+  }
 
   return PyFloat_FromDouble(pre);
 }
