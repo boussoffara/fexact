@@ -56,9 +56,8 @@ def test_errors_ws():
         print(res)
 
 
-def test_errors_crash():
-    # k=np.array([[10,6,7]*10,[5,7,9]*10], dtype=np.int64)
-    k = np.array([[10, 6, 7] * 2, [5, 7, 9] * 2], dtype=np.int64)
-    res = fexact(k, workspace=10000, hybrid=False)
-    print(res)
-    gc.collect()
+def test_errors_ws2():
+    k = np.array([[10, 6, 7] * 10, [5, 7, 9] * 10], dtype=np.int64)
+    with pytest.raises(ValueError):
+        res = fexact(k, workspace=2 ** 3, hybrid=False)
+        print(res)

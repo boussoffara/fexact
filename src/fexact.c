@@ -191,7 +191,11 @@ fexact(int nrow, int ncol, const int table[], int ldtabl,
 	iwkpt = 0,
 	n2_stack = imax2(200, iwkmax/1000); // previously was 200 hard wired
 
-    equiv = (double *) calloc(iwkmax , sizeof(double));
+    equiv = (double *) malloc(iwkmax / 2 * sizeof(double));
+    if(equiv == NULL){
+      prterr(0,"Memory allocation failed");
+      return ;
+    }
 
 #define dwrk (equiv)
 #define iwrk ((int *)equiv)
@@ -291,7 +295,10 @@ fexact(int nrow, int ncol, const int table[], int ldtabl,
     i9a = iwork(iwkmax, &iwkpt, ldkey << 1, i_real);
     i10 = iwork(iwkmax, &iwkpt, ldkey << 1, i_int);
 
-
+    if (PyErr_Occurred()){
+      free(equiv);
+      return ;
+    }
     /* To convert to double precision, change RWRK to DWRK in the next CALL.
      */
     f2xact(nrow,
@@ -1856,9 +1863,9 @@ int iwork(int iwkmax, int *iwkpt, int number, int itype)
 	*iwkpt += (number << 1);
 	i /= 2;
     }
-    if (*iwkpt > iwkmax)
-	prterr(40, "Out of workspace.");
-
+    if (*iwkpt > iwkmax){
+      	prterr(40, "Out of workspace.");
+    }
     return i;
 }
 
