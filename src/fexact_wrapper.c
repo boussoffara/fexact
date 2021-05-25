@@ -23,8 +23,8 @@ trace(PyObject *self, PyObject *args, PyObject *kwargs){
   double expect=-1;
   double percnt=100;
   double emin=0;
-  double prt;
-  double pre;
+  double prt=0;
+  double pre=0;
 
   static char *kwlist[] = {"array", "workspace","hybrid", NULL};
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|ip", kwlist,&PyArray_Type, &array,&workspace,&hybrid))
@@ -44,9 +44,9 @@ trace(PyObject *self, PyObject *args, PyObject *kwargs){
   }
 
   // copy table and prepare corresponding vars for fexact
-  int nrow =array->dimensions[0];
-  int ldtabl=array->dimensions[0];
-  int ncol=array->dimensions[1];
+  int nrow = (int) array->dimensions[0];
+  int ldtabl= (int) array->dimensions[0];
+  int ncol= (int) array->dimensions[1];
   int * table=malloc(nrow*ncol*sizeof(int));
   for (j = 0; j < ncol; j++){
     for (i = 0; i < nrow; i++){
@@ -56,10 +56,10 @@ trace(PyObject *self, PyObject *args, PyObject *kwargs){
 
 
   // call fexact
-  fexact(&nrow, &ncol, table, &ldtabl,
-  &expect, &percnt, &emin, &prt,
-  &pre, &workspace,
-  &mult);
+  fexact(nrow, ncol, table, ldtabl,
+  expect, percnt, emin, &prt,
+  &pre, workspace,
+  mult);
   free(table);
   if (PyErr_Occurred()){
     return NULL;
