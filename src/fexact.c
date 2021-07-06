@@ -781,6 +781,9 @@ L300:
 		   &ifrq[jstp], &ifrq[jstp2], &ifrq[jstp3], &ifrq[jstp4],
 		   ifreq, &itop, psh);
 	    psh = FALSE;
+      if (PyErr_Occurred()){
+        return ;
+      }
 	}
     }
     /* Get next PASTP on chain */
@@ -1437,10 +1440,11 @@ L30: /* Update KEY */
 	if (*itop > ldstp) {
 	    /* KH */
       prterr(7, "LDSTP is too small for this problem.\n");
-//	    error(_("FEXACT error 7(%s). LDSTP=%d is too small for this problem,\n"
-//		    "  (kval=%d, itop-ldstp=%d).\n"
-//		    "Increase workspace or consider using 'simulate.p.value=TRUE'."),
-//		  "update key", ldstp, *kval, *itop-ldstp);
+      return ;
+      //	    error(_("FEXACT error 7(%s). LDSTP=%d is too small for this problem,\n"
+      //		    "  (kval=%d, itop-ldstp=%d).\n"
+      //		    "Increase workspace or consider using 'simulate.p.value=TRUE'."),
+      //		  "update key", ldstp, *kval, *itop-ldstp);
 	}
 	/* Update STP, etc. */
 	npoin[*itop] = -1;
@@ -1471,14 +1475,15 @@ L40: /* Find location, if any, of pastp */
     /* Return if STP array full */
     ++(*itop);
     if (*itop > ldstp) { // Seeing this as the "final" error, even for large workspace
-	/*
+	  /*
 	  prterr(7, "LDSTP is too small for this problem.\n" ... */
-	int ipn0 = ipoin[itp];
-	prterr(7, "LDSTP is too small for this problem.\n");
-//	error(_("FEXACT error 7(%s). LDSTP=%d is too small for this problem,\n"
-//		"  (pastp=%g, ipn_0:=ipoin[itp=%d]=%d, stp[ipn_0]=%g).\n"
-//		"Increase workspace or consider using 'simulate.p.value=TRUE'"),
-//	      "location", ldstp, pastp,  itp, ipn0,  stp[ipn0]);// NB: *itop -ldstp == 1 here
+    prterr(7, "LDSTP is too small for this problem.\n");
+    int ipn0 = ipoin[itp];
+    return ;
+    //	error(_("FEXACT error 7(%s). LDSTP=%d is too small for this problem,\n"
+    //		"  (pastp=%g, ipn_0:=ipoin[itp=%d]=%d, stp[ipn_0]=%g).\n"
+    //		"Increase workspace or consider using 'simulate.p.value=TRUE'"),
+    //	      "location", ldstp, pastp,  itp, ipn0,  stp[ipn0]);// NB: *itop -ldstp == 1 here
     }
 
     /* Find location to add value */
