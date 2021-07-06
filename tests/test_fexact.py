@@ -62,7 +62,7 @@ def test_errors_ws2():
         res = fexact(k, workspace=2 ** 3, hybrid=False)
         print(res)
 
-def test_fexact_crash():
+def test_errors_ldstep():
 
     k = np.array(
         [
@@ -74,4 +74,6 @@ def test_fexact_crash():
         ],
         dtype=np.int64,
     )
-    res = fexact(k, workspace=int(3e7))
+    with pytest.raises(ValueError):
+        res = fexact(k, workspace=int(3e7))
+        print(res)
