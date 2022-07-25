@@ -16,7 +16,7 @@ jobs:
     name: Test build on ${{ matrix.os }} py${{ matrix.python }}
     runs-on: ${{ matrix.os }}
     strategy:
-      max-parallel: 4
+      max-parallel: 6
       matrix:
         python: ["3.8", "3.9", "3.10"]
         os: [ubuntu-20.04, windows-2019, macos-11]
@@ -29,7 +29,7 @@ jobs:
     - name: Install tox
       run: pip3 install tox
     - name: Run tox
-      run: tox -e py
+      run: tox -p all
 
 
   build_wheels:
