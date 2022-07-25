@@ -8,8 +8,11 @@ name: Publish release
 # Alternatively, to publish when a (published) GitHub Release is created, use the following:
 on:
   release:
-   types:
-     - published
+    types:
+      - published
+  workflow_dispatch:
+
+
 
 jobs:
   test_build:
