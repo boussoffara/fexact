@@ -4,7 +4,7 @@ import numpy
 
 setup(
     name="fexact",
-    version="0.0.8",
+    version="0.0.9",
     description="Exact Fisher test for nxm contingency matrix based on fortran acm 643 and R",
     license="GPLv3",
     author="A. Boussoffara",
