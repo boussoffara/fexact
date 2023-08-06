@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 from distutils.core import setup, Extension
+from setuptools import dist
+dist.Distribution().fetch_build_eggs(['wheel', 'numpy~=1.22.0'])
 import numpy
 
 setup(
