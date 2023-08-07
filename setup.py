@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from distutils.core import setup, Extension
 from setuptools import dist
+from distutils.core import setup, Extension
 dist.Distribution().fetch_build_eggs([ 'numpy~=1.22.0'])
 import numpy
 
