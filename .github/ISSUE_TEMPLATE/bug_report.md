@@ -23,10 +23,10 @@ Steps to reproduce the behavior:
 ### Environment
 
 * OS: [e.g. Linux / Windows / macOS]
-* Python version, get it with:
+* Python, numpy and fexact versions, get them with:
 
 ```bash
-python --version
+python -c "import sys, numpy, importlib.metadata as m; print(sys.version, numpy.__version__, m.version('fexact'))"
 ```
 
 ### Screenshots

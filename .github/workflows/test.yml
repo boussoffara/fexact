@@ -1,21 +1,55 @@
 name: Run Tests
 on: [push, pull_request]
 jobs:
-  build:
-    name: Test build on ${{ matrix.os }} py${{ matrix.python }}
+  rust:
+    name: Rust (cargo test, clippy)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        components: clippy
+    - uses: Swatinem/rust-cache@v2
+    - name: Test (unit tests + golden corpus)
+      run: cargo test
+    - name: Clippy
+      run: cargo clippy --features python --all-targets -- -D warnings
+
+  python:
+    name: Python ${{ matrix.python }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
-      max-parallel: 4
+      fail-fast: false
       matrix:
-        python: ["3.9", "3.10", "3.11"]
-        os: [ubuntu-20.04, windows-2019, macos-11]
+        python: ["3.9", "3.11", "3.13"]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup Python
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python }}
-    - name: Install tox
-      run: pip3 install tox
-    - name: Run tox
-      run: tox
+    - uses: dtolnay/rust-toolchain@stable
+    - uses: Swatinem/rust-cache@v2
+    - name: Build and install (maturin)
+      run: pip install .[test]
+    - name: Test
+      run: pytest
+
+  parity:
+    name: Parity with the C reference
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - uses: dtolnay/rust-toolchain@stable
+    - uses: Swatinem/rust-cache@v2
+    - name: Build the C reference
+      run: |
+        pip install numpy setuptools
+        python legacy/setup.py build_ext --inplace
+    - name: Build and install (maturin)
+      run: pip install .[test]
+    - name: Compare with C
+      run: pytest tests/test_parity.py -rs

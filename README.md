@@ -2,202 +2,101 @@
 
 <div align="center">
 
-[![Build status](https://github.com/boussoffara/fexact/workflows/Run%20Tests/badge.svg?branch=master&event=push)](https://github.com/boussoffara/fexact/actions?query=workflow%3Abuild)
+[![Build status](https://github.com/boussoffara/fexact/actions/workflows/test.yml/badge.svg?branch=master&event=push)](https://github.com/boussoffara/fexact/actions/workflows/test.yml)
 [![Python Version](https://img.shields.io/pypi/pyversions/fexact.svg)](https://pypi.org/project/fexact/)
-[![Dependencies Status](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)](https://github.com/boussoffara/fexact/pulls?utf8=%E2%9C%93&q=is%3Apr%20author%3Aapp%2Fdependabot)
-
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/boussoffara/fexact/blob/master/.pre-commit-config.yaml)
+[![PyPI](https://img.shields.io/pypi/v/fexact.svg)](https://pypi.org/project/fexact/)
 [![Semantic Versions](https://img.shields.io/badge/%F0%9F%9A%80-semantic%20versions-informational.svg)](https://github.com/boussoffara/fexact/releases)
-[![License](https://img.shields.io/github/license/boussoffara/fexact)](https://github.com/boussoffara/fexact/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/boussoffara/fexact)](https://github.com/boussoffara/fexact/blob/master/LICENSE.txt)
 
-`fexact` is a port of R's Fisher test for nxm contingency tables (acm 643 algorithm)
+`fexact` is Fisher's exact test for r x c contingency tables: a port of R's network algorithm (ACM 643), with a Monte Carlo variant
 
 </div>
 
 ## Install
 
-1. Install this package using pip
-
 ```bash
 pip install fexact
 ```
+
+Wheels are built for Linux, macOS and Windows (Python >= 3.9). Building from
+source needs a Rust toolchain.
 
 ## Usage
 
 ```python
 import numpy as np
-from fexact import fexact
-contingency=np.array([[5,1,5],[1,1,5]], dtype=np.intc)
-fexact(contingency)
+from fexact import fexact, fexact_many, fexact_simulate
+
+contingency = np.array([[5, 1, 5], [1, 1, 5]], dtype=np.int64)
+fexact(contingency)                                  # 0.40045...
+fexact(contingency, workspace=10**7, hybrid=True)    # Cochran-condition hybrid approximation
+
+# Many tables in parallel (the GIL is released; threads=None uses all cores).
+fexact_many([t1, t2, t3], workspace=10**6, threads=None)  # -> [p1, p2, p3]
+
+# Monte Carlo p-value from random tables with the same margins, in parallel.
+# Reproducible for a given seed, whatever the number of threads.
+fexact_simulate(contingency, samples=100_000, seed=1, threads=None)
 ```
 
-using  `dtype=np.intc` is crucial
+`fexact_simulate` works like R's `fisher.test(simulate.p.value = TRUE)`: it
+returns `(1 + hits) / (samples + 1)`, where hits are the random tables at most
+as probable as the observed one. It has no workspace limit, so it also handles
+tables too large for the exact test, including counts beyond 2^31 (about 0.2 s
+per million samples for a 10x10 table with n = 5000 on 32 threads).
 
-### Makefile usage
+Tables must be two-dimensional `np.int64` arrays. `fexact` raises `ValueError` on
+invalid input or when `workspace` is too small; `fexact_many` raises
+`ValueError("table i: ...")` for the first table that fails.
 
-[`Makefile`](https://github.com/boussoffara/fexact/blob/master/Makefile) contains many functions for fast assembling and convenient work.
+## Implementation
 
-<details>
-<summary>1. Download Poetry</summary>
-<p>
+`fexact` is written in Rust (`src/`): a port of R's `fexact.c` (ACM TOMS 643,
+Mehta & Patel's network algorithm) that returns bit-identical p-values and the
+same errors as the original C extension, about twice as fast, except where the
+C code's 32-bit integers overflow. There the C extension either fails (error
+501) or, on wide tables such as 2 x 21 and above, silently returns wrong
+p-values; this version uses 64-bit node keys and path counts and gets them
+right (checked against R's and its own Monte Carlo simulation). `src/lib.rs` maps
+each module to the C routine it ports. The C code is kept in `legacy/` as the
+reference.
+
+It can also be used as a Rust library:
+
+```rust
+use fexact::{fisher_exact, fisher_exact_many, Hybrid, Options, Table};
+
+let counts = [5, 1, 5,
+              1, 1, 5];
+let table = Table::from_row_major(&counts, 2, 3);
+let exact = fisher_exact(&table, &Options::default())?.p_value;
+let hybrid = fisher_exact(&table, &Options { hybrid: Some(Hybrid::COCHRAN), ..Options::default() })?;
+```
+
+`fexact::fisher_simulated(&table, &Simulation { samples, seed, threads })`
+is the Monte Carlo test. `fexact::compat::fexact` keeps the C signature (column-major table with leading
+dimension, `expect`/`percnt`/`emin`, `workspace`, `mult`).
+
+## Development
 
 ```bash
-make download-poetry
+cargo test                       # unit tests + tests/golden.rs
+pip install maturin pytest
+maturin develop --release        # or: pip install .
+pytest
 ```
 
-</p>
-</details>
+- `tests/golden.rs` replays ~15k cases recorded from the C extension
+  (`tests/data/golden.txt`) and requires exact agreement.
+- `tests/test_parity.py` compares random tables against the C extension. It is
+  skipped unless the C reference has been built with
+  `python legacy/setup.py build_ext --inplace`, which is also what
+  `tests/gen_golden.py` needs to regenerate the corpus.
 
-<details>
-<summary>2. Install all dependencies and pre-commit hooks</summary>
-<p>
+## Contributing
 
-```bash
-make install
-```
-
-If you do not want to install pre-commit hooks, run the command with the NO_PRE_COMMIT flag:
-
-```bash
-make install NO_PRE_COMMIT=1
-```
-
-</p>
-</details>
-
-<details>
-<summary>3. Check the security of your code</summary>
-<p>
-
-```bash
-make check-safety
-```
-
-This command launches a `Poetry` and `Pip` integrity check as well as identifies security issues with `Safety` and `Bandit`. By default, the build will not crash if any of the items fail. But you can set `STRICT=1` for the entire build, or you can configure strictness for each item separately.
-
-```bash
-make check-safety STRICT=1
-```
-
-or only for `safety`:
-
-```bash
-make check-safety SAFETY_STRICT=1
-```
-
-multiple
-
-```bash
-make check-safety PIP_STRICT=1 SAFETY_STRICT=1
-```
-
-> List of flags for `check-safety` (can be set to `1` or `0`): `STRICT`, `POETRY_STRICT`, `PIP_STRICT`, `SAFETY_STRICT`, `BANDIT_STRICT`.
-
-</p>
-</details>
-
-<details>
-<summary>4. Check the codestyle</summary>
-<p>
-
-The command is similar to `check-safety` but to check the code style, obviously. It uses `Black`, `Darglint`, `Isort`, and `Mypy` inside.
-
-```bash
-make check-style
-```
-
-It may also contain the `STRICT` flag.
-
-```bash
-make check-style STRICT=1
-```
-
-> List of flags for `check-style` (can be set to `1` or `0`): `STRICT`, `BLACK_STRICT`, `DARGLINT_STRICT`, `ISORT_STRICT`, `MYPY_STRICT`.
-
-</p>
-</details>
-
-<details>
-<summary>5. Run all the codestyle formaters</summary>
-<p>
-
-Codestyle uses `pre-commit` hooks, so ensure you've run `make install` before.
-
-```bash
-make codestyle
-```
-
-</p>
-</details>
-
-<details>
-<summary>6. Run tests</summary>
-<p>
-
-```bash
-make test
-```
-
-</p>
-</details>
-
-<details>
-<summary>7. Run all the linters</summary>
-<p>
-
-```bash
-make lint
-```
-
-the same as:
-
-```bash
-make test && make check-safety && make check-style
-```
-
-> List of flags for `lint` (can be set to `1` or `0`): `STRICT`, `POETRY_STRICT`, `PIP_STRICT`, `SAFETY_STRICT`, `BANDIT_STRICT`, `BLACK_STRICT`, `DARGLINT_STRICT`, `ISORT_STRICT`, `MYPY_STRICT`.
-
-</p>
-</details>
-
-<details>
-<summary>8. Build docker</summary>
-<p>
-
-```bash
-make docker
-```
-
-which is equivalent to:
-
-```bash
-make docker VERSION=latest
-```
-
-More information [here](https://github.com/boussoffara/fexact/tree/master/docker).
-
-</p>
-</details>
-
-<details>
-<summary>9. Cleanup docker</summary>
-<p>
-
-```bash
-make clean_docker
-```
-
-or to remove all build
-
-```bash
-make clean
-```
-
-More information [here](https://github.com/boussoffara/fexact/tree/master/docker).
-
-</p>
-</details>
+See [CONTRIBUTING.md](https://github.com/boussoffara/fexact/blob/master/CONTRIBUTING.md).
+Changes are listed in [CHANGELOG.md](https://github.com/boussoffara/fexact/blob/master/CHANGELOG.md).
 
 ## 📈 Releases
 
@@ -222,11 +121,16 @@ You can update it in [`release-drafter.yml`](https://github.com/boussoffara/fexa
 
 GitHub creates the `bug`, `enhancement`, and `documentation` labels for you. Dependabot creates the `dependencies` label. Create the remaining labels on the Issues tab of your GitHub repository, when you need them.
 
+To release:
+
+1. Bump the version with `bump2version patch|minor|major` (updates `Cargo.toml` and `Cargo.lock`, commits and tags), and push with `--follow-tags`.
+2. Publish a pre-release on GitHub to upload to Test PyPI, then a release to upload to PyPI. Both build wheels for Linux, macOS and Windows plus an sdist.
+
 ## 🛡 License
 
-[![License](https://img.shields.io/github/license/boussoffara/fexact)](https://github.com/boussoffara/fexact/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/boussoffara/fexact)](https://github.com/boussoffara/fexact/blob/master/LICENSE.txt)
 
-This project is licensed under the terms of the `GNU GPL v3.0` license. See [LICENSE](https://github.com/boussoffara/fexact/blob/master/LICENSE) for more details.
+This project is licensed under the terms of the `GNU GPL v3.0` license (`GPL-3.0-only`). See [LICENSE.txt](https://github.com/boussoffara/fexact/blob/master/LICENSE.txt) for more details.
 
 ## 📃 Citation
 
@@ -243,4 +147,4 @@ This project is licensed under the terms of the `GNU GPL v3.0` license. See [LIC
 
 ## Credits
 
-This project was generated with [`python-package-template`](https://github.com/TezRomacH/python-package-template).
+The algorithm is Mehta & Patel's network algorithm (ACM TOMS 643) as found in R's `fexact.c`. The project was started from [`python-package-template`](https://github.com/TezRomacH/python-package-template).
