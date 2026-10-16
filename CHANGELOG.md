@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 (unreleased)
+## 0.2.0 (2026-10-16)
 
 `fexact` is now written in Rust and built with maturin. Wherever the C
 extension was correct, `fexact` returns the same p-values to the bit and the
