@@ -21,8 +21,8 @@
 
 <!-- Mark with an `x` all the checkboxes that apply (like `[x]`) -->
 
-- [ ] I've read the [`CODE_OF_CONDUCT.md`](https://github.com/boussoffara/fisher-acm/blob/master/CODE_OF_CONDUCT.md) document.
-- [ ] I've read the [`CONTRIBUTING.md`](https://github.com/boussoffara/fisher-acm/blob/master/CONTRIBUTING.md) guide.
-- [ ] I've updated the code style using `make codestyle`.
-- [ ] I've written tests for all new methods and classes that I created.
-- [ ] I've written the docstring in Google format for all the methods and classes that I used.
+- [ ] I've read the [`CODE_OF_CONDUCT.md`](https://github.com/boussoffara/fexact/blob/master/CODE_OF_CONDUCT.md) document.
+- [ ] I've read the [`CONTRIBUTING.md`](https://github.com/boussoffara/fexact/blob/master/CONTRIBUTING.md) guide.
+- [ ] I've formatted the code with `cargo fmt` and `cargo clippy --features python --all-targets` is clean.
+- [ ] I've written tests for the changes, and `cargo test` and `pytest` pass.
+- [ ] I've documented new public functions, and updated `README.md` and `CHANGELOG.md` if needed.

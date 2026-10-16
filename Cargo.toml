@@ -1,0 +1,32 @@
+[package]
+name = "fexact"
+version = "0.2.0"
+edition = "2021"
+rust-version = "1.85"
+description = "Fisher's exact test for r x c contingency tables (port of ACM TOMS 643 / R's fexact.c)"
+license = "GPL-3.0-only"
+repository = "https://github.com/boussoffara/fexact"
+readme = "README.md"
+# What `cargo package` and the Python sdist ship (not the C reference or the
+# golden corpus).
+include = ["/src", "/tests/test_fexact.py", "/README.md", "/LICENSE.txt"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# Python bindings; enabled by maturin (see pyproject.toml). `cargo test`
+# builds the pure-Rust core without them.
+python = ["dep:pyo3", "dep:numpy"]
+
+[dependencies]
+pyo3 = { version = "0.30", optional = true, features = ["abi3-py39"] }
+numpy = { version = "0.30", optional = true }
+
+[profile.release]
+lto = true
+codegen-units = 1
+
+# Optimised but still overflow-checked, so the golden corpus replays quickly.
+[profile.test]
+opt-level = 3
