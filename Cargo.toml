@@ -1,6 +1,6 @@
 [package]
 name = "fexact"
-version = "0.2.0"
+version = "0.2.0-rc.1"
 edition = "2021"
 rust-version = "1.85"
 description = "Fisher's exact test for r x c contingency tables (port of ACM TOMS 643 / R's fexact.c)"
